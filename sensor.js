@@ -20,9 +20,9 @@ class Sensor {
   draw(ctx) {
     for (let i = 0; i < this.rayCount; i++) {
       let color = 'yellow';
-      if (this.rays[i] !== undefined) {
+      if (this.rays[i]) {
         let end = this.rays[i][1];
-        if (this.readings[i] !== undefined) {
+        if (this.readings[i]) {
           end = this.readings[i];
           color = 'red';
         }
@@ -73,15 +73,18 @@ class Sensor {
         roadBorders[i][0],
         roadBorders[i][1]
       );
-      if (touch !== undefined) {
+      if (i == 1) {
+        roadBorders[i];
+      }
+      if (touch) {
         touches.push(touch);
       }
-      if (touches.length === 0) {
-        return null;
-      }
-      // order by the offset, get the smallest one (closest to the car)
-      // and return it
-      return touches.sort((a, b) => a.offset - b.offset)[0];
     }
+    if (touches.length === 0) {
+      return null;
+    }
+    // order by the offset, get the smallest one (closest to the car)
+    // and return it
+    return touches.sort((a, b) => a.offset - b.offset)[0];
   }
 }
