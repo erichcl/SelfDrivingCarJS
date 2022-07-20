@@ -14,27 +14,32 @@ class Car {
     this.turningAngle = 0.05;
     this.sensor = new Sensor(this);
     this.controls = new Controls();
-    this.damage = 0;
-    this.maxHealth = 255;
+    // this.damage = 0;
+    // this.maxHealth = 255;
+    this.hasDamage = false;
     this.polygon = [];
   }
 
   update(roadBorders) {
-    this.#move();
-    this.polygon = this.#createPolygon();
-    this.damage += this.#assesDamage(roadBorders);
+    if (!this.hasDamage) {
+      this.#move();
+      this.polygon = this.#createPolygon();
+      // this.damage += this.#assesDamage(roadBorders);
+      this.hasDamage = this.#assesDamage(roadBorders);
+    }
+
     this.sensor.update(roadBorders);
   }
 
   #assesDamage(roadBorders) {
     for (let i = 0; i < roadBorders.length; i++) {
       if (polyIntersect(this.polygon, roadBorders[i])) {
-        this.angle = this.angle * -1;
-        console.log(this.speed);
-        return this.speed * 10;
+        // this.angle = this.angle * -1;
+        // return this.speed * 10;
+        return true;
       }
     }
-    return 0;
+    return false;
   }
 
   #createPolygon() {
@@ -112,11 +117,14 @@ class Car {
       return;
     }
 
-    if (this.damage >= this.maxHealth) {
-      this.damage = 0;
-    }
+    // if (this.damage >= this.maxHealth) {
+    //   this.damage = 0;
+    // }
 
-    this.color = buildColor(this.damage, 0, 0, 1);
+    this.color = buildColor(0, 0, 0, 1);
+    if (this.hasDamage) {
+      this.color = buildColor(255, 0, 0, 1);
+    }
 
     ctx.beginPath();
     ctx.fillStyle = this.color;
