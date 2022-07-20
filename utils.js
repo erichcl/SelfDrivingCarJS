@@ -29,3 +29,25 @@ getIntersection = (LineAStart, LineAEnd, LineBStart, LineBEnd) => {
   }
   return null;
 };
+
+polyIntersect = (polyA, polyB) => {
+  for (let i = 0; i < polyA.length; i++) {
+    for (let j = 0; j < polyB.length; j++) {
+      if (
+        getIntersection(
+          polyA[i],
+          polyA[(i + 1) % polyA.length],
+          polyB[j],
+          polyB[(j + 1) % polyB.length]
+        )
+      ) {
+        return true;
+      }
+    }
+  }
+  return false;
+};
+
+buildColor = (r = 0, g = 0, b = 0, a = 1) => {
+  return 'rgba(' + r + ',' + g + ',' + b + ',' + a + ')';
+};

@@ -4,7 +4,7 @@ class Car {
     this.y = y;
     this.width = w;
     this.height = h;
-    this.color = 'green';
+    this.color = buildColor();
 
     this.speed = 0;
     this.acceleration = 0.2;
@@ -14,13 +14,27 @@ class Car {
     this.turningAngle = 0.05;
     this.sensor = new Sensor(this);
     this.controls = new Controls();
+    this.damage = 0;
+    this.maxHealth = 255;
     this.polygon = [];
   }
 
   update(roadBorders) {
     this.#move();
     this.polygon = this.#createPolygon();
+    this.damage += this.#assesDamage(roadBorders);
     this.sensor.update(roadBorders);
+  }
+
+  #assesDamage(roadBorders) {
+    for (let i = 0; i < roadBorders.length; i++) {
+      if (polyIntersect(this.polygon, roadBorders[i])) {
+        this.angle = this.angle * -1;
+        console.log(this.speed);
+        return this.speed * 10;
+      }
+    }
+    return 0;
   }
 
   #createPolygon() {
@@ -97,6 +111,13 @@ class Car {
     if (this.polygon.length == 0) {
       return;
     }
+
+    if (this.damage >= this.maxHealth) {
+      this.damage = 0;
+    }
+
+    this.color = buildColor(this.damage, 0, 0, 1);
+
     ctx.beginPath();
     ctx.fillStyle = this.color;
     ctx.lineWidth = 2;
