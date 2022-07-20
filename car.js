@@ -4,7 +4,6 @@ class Car {
     this.y = y;
     this.width = w;
     this.height = h;
-    this.color = buildColor();
 
     this.speed = 0;
     this.acceleration = 0.2;
@@ -12,8 +11,12 @@ class Car {
     this.friction = 0.05;
     this.angle = 0;
     this.turningAngle = 0.05;
+
+    this.useBrain = controlType == 'AI';
+
     if (controlType != 'DUMMY') {
       this.sensor = new Sensor(this);
+      this.brain = new NeuralNetwork([this.sensor.rayCount, 6, 4]);
     }
     this.controls = new Controls(controlType);
     // this.damage = 0;
@@ -31,6 +34,17 @@ class Car {
 
     if (this.sensor) {
       this.sensor.update(roadBorders, traffic);
+      const offsets = this.sensor.readings.map((s) =>
+        s == null ? 0 : 1 - s.offset
+      );
+      const outputs = NeuralNetwork.feedForward(offsets, this.brain);
+
+      if (this.useBrain) {
+        this.controls.forward = outputs[0];
+        this.controls.left = outputs[1];
+        this.controls.right = outputs[2];
+        this.controls.reverse = outputs[3];
+      }
     }
   }
 
@@ -122,22 +136,17 @@ class Car {
     this.y -= this.speed * Math.cos(this.angle);
   }
 
-  #drawPolygon(ctx) {
+  #drawPolygon(ctx, color = 'black') {
     if (this.polygon.length == 0) {
       return;
     }
 
-    // if (this.damage >= this.maxHealth) {
-    //   this.damage = 0;
-    // }
-
-    this.color = buildColor(0, 0, 0, 1);
     if (this.hasDamage) {
-      this.color = buildColor(255, 0, 0, 1);
+      color = buildColor(255, 0, 0, 1);
     }
 
     ctx.beginPath();
-    ctx.fillStyle = this.color;
+    ctx.fillStyle = color;
     ctx.lineWidth = 2;
     ctx.moveTo(this.polygon[0].x, this.polygon[0].y);
     for (let i = 1; i < this.polygon.length; i++) {
@@ -147,8 +156,8 @@ class Car {
     ctx.closePath();
   }
 
-  draw(ctx) {
-    this.#drawPolygon(ctx);
+  draw(ctx, color) {
+    this.#drawPolygon(ctx, color);
     if (this.sensor) {
       this.sensor.draw(ctx);
     }
