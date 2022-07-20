@@ -156,9 +156,9 @@ class Car {
     ctx.closePath();
   }
 
-  draw(ctx, color) {
+  draw(ctx, color, drawSensor = false) {
     this.#drawPolygon(ctx, color);
-    if (this.sensor) {
+    if (this.sensor && drawSensor) {
       this.sensor.draw(ctx);
     }
   }
