@@ -1,5 +1,6 @@
 const NCars = 500;
-const MutationRate = 0.2;
+const MutationRate = 0.1;
+const reloadTime = 20;
 
 const carCanvas = document.getElementById('carCanvas');
 carCanvas.width = 200;
@@ -24,13 +25,13 @@ if (localStorage.getItem('bestBrain')) {
 const traffic = [
   new Car(road.getLaneCenter(1), -100, 30, 50, 'DUMMY', 2),
   new Car(road.getLaneCenter(0), -300, 30, 50, 'DUMMY', 2),
-  new Car(road.getLaneCenter(2), -210, 30, 50, 'DUMMY', 2),
+  new Car(road.getLaneCenter(2), -150, 30, 50, 'DUMMY', 2),
   new Car(road.getLaneCenter(1), -350, 30, 50, 'DUMMY', 2),
-  new Car(road.getLaneCenter(2), -450, 30, 50, 'DUMMY', 2),
+  new Car(road.getLaneCenter(2), -500, 30, 50, 'DUMMY', 2),
   new Car(road.getLaneCenter(0), -500, 30, 50, 'DUMMY', 2),
-  new Car(road.getLaneCenter(1), -625, 30, 50, 'DUMMY', 2),
-  new Car(road.getLaneCenter(0), -790, 30, 50, 'DUMMY', 2),
-  new Car(road.getLaneCenter(2), -790, 30, 50, 'DUMMY', 2),
+  new Car(road.getLaneCenter(1), -655, 30, 50, 'DUMMY', 2),
+  new Car(road.getLaneCenter(0), -870, 30, 50, 'DUMMY', 2),
+  new Car(road.getLaneCenter(2), -870, 30, 50, 'DUMMY', 2),
 ];
 animate();
 
@@ -71,6 +72,9 @@ function animate(time) {
   for (let i = 0; i < traffic.length; i++) {
     traffic[i].draw(carCtx, 'green');
   }
+
+  traffic[0].draw(carCtx, 'blue');
+  traffic[traffic.length - 1].draw(carCtx, 'yellow');
   carCtx.globalAlpha = 0.3;
   for (let i = 0; i < cars.length; i++) {
     cars[i].draw(carCtx, 'black');
@@ -83,4 +87,9 @@ function animate(time) {
   networkCtx.lineDashOffset = -time / 50;
   Visualizer.drawNetwork(networkCtx, bestCar.brain);
   requestAnimationFrame(animate);
+
+  window.setTimeout(function () {
+    save();
+    window.location.reload();
+  }, reloadTime * 1000);
 }
